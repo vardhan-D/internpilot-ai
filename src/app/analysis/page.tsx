@@ -1,10 +1,29 @@
 import { prisma } from "@/lib/prisma";
+import { auth } from "@clerk/nextjs/server";
 import type { ResumeAnalysis } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
 export default async function AnalysisPage() {
+  const { userId } = await auth();
+
+  if (!userId) {
+    return (
+      <main className="min-h-screen bg-slate-950 px-6 py-10 text-white">
+        <section className="mx-auto max-w-6xl">
+          <h1 className="text-3xl font-bold">Unauthorized</h1>
+          <p className="mt-2 text-slate-400">
+            Please sign in to view your resume analyses.
+          </p>
+        </section>
+      </main>
+    );
+  }
+
   const analyses = await prisma.resumeAnalysis.findMany({
+    where: {
+      userId,
+    },
     orderBy: {
       createdAt: "desc",
     },
@@ -56,7 +75,10 @@ export default async function AnalysisPage() {
                 <div className="mt-6 grid gap-4 md:grid-cols-2">
                   <ResultList title="Strengths" items={item.strengths} />
                   <ResultList title="Weaknesses" items={item.weaknesses} />
-                  <ResultList title="Missing Skills" items={item.missingSkills} />
+                  <ResultList
+                    title="Missing Skills"
+                    items={item.missingSkills}
+                  />
                   <ResultList
                     title="Recommended Roles"
                     items={item.recommendedRoles}

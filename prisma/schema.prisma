@@ -9,6 +9,7 @@ datasource db {
 
 model ResumeAnalysis {
   id                     String   @id @default(cuid())
+  userId                 String?
   fileName               String?
   extractedTextPreview   String?
   resumeScore            Int
@@ -21,8 +22,10 @@ model ResumeAnalysis {
   improvementSuggestions String[]
   createdAt              DateTime @default(now())
 }
+
 model InternshipApplication {
   id        String   @id @default(cuid())
+  userId    String?
   company   String
   role      String
   status    String

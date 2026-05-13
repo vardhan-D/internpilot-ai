@@ -1,9 +1,17 @@
-import Link from "next/link";
+import { auth } from "@clerk/nextjs/server";
+import AuthButtons from "@/components/AuthButtons";
+import HeroButtons from "@/components/HeroButtons";
 
-export default function Home() {
+export default async function Home() {
+  const { userId } = await auth();
+
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       <section className="mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center px-6 text-center">
+        <div className="absolute right-6 top-6 flex items-center gap-4">
+          <AuthButtons userId={userId} />
+        </div>
+
         <div className="mb-4 rounded-full border border-slate-700 px-4 py-2 text-sm text-slate-300">
           AI Career Assistant for Students
         </div>
@@ -19,19 +27,7 @@ export default function Home() {
         </p>
 
         <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-          <Link
-            href="/dashboard"
-            className="rounded-xl bg-white px-6 py-3 font-semibold text-slate-950 transition hover:bg-slate-200"
-          >
-            Get Started
-          </Link>
-
-          <Link
-            href="/upload-resume"
-            className="rounded-xl border border-slate-700 px-6 py-3 font-semibold text-white transition hover:bg-slate-900"
-          >
-            Upload Resume
-          </Link>
+          <HeroButtons userId={userId} />
         </div>
 
         <div className="mt-16 grid w-full gap-6 md:grid-cols-3">

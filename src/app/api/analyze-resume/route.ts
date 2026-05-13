@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import pdf from "pdf-parse/lib/pdf-parse.js";
 import { prisma } from "@/lib/prisma";
-
+import { auth } from "@clerk/nextjs/server";
 export const runtime = "nodejs";
 
 type ResumeAnalysis = {
@@ -75,6 +75,15 @@ function getMockAnalysis(): ResumeAnalysis {
 
 export async function POST(request: Request) {
   try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Unauthorized. Please sign in first." },
+        { status: 401 }
+      );
+    }
+
     const formData = await request.formData();
     const file = formData.get("resume");
 
@@ -189,8 +198,9 @@ Return this exact JSON structure:
         { status: 500 }
       );
     }
-    await prisma.resumeAnalysis.create({
+await prisma.resumeAnalysis.create({
   data: {
+    userId,
     fileName: file.name,
     extractedTextPreview: resumeText.slice(0, 500),
     resumeScore: analysis.resumeScore,

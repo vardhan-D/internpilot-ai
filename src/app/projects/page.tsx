@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { auth } from "@clerk/nextjs/server";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +11,25 @@ type ProjectRecommendation = {
 };
 
 export default async function ProjectsPage() {
+  const { userId } = await auth();
+
+  if (!userId) {
+    return (
+      <main className="min-h-screen bg-slate-950 px-6 py-10 text-white">
+        <section className="mx-auto max-w-6xl">
+          <h1 className="text-3xl font-bold">Unauthorized</h1>
+          <p className="mt-2 text-slate-400">
+            Please sign in to view your project recommendations.
+          </p>
+        </section>
+      </main>
+    );
+  }
+
   const analyses = await prisma.resumeAnalysis.findMany({
+    where: {
+      userId,
+    },
     orderBy: {
       createdAt: "desc",
     },
