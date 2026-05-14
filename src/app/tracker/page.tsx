@@ -13,19 +13,31 @@ type Application = {
   createdAt: string;
 };
 
+type ApplicationForm = {
+  company: string;
+  role: string;
+  status: string;
+  link: string;
+  deadline: string;
+  notes: string;
+};
+
+const emptyForm: ApplicationForm = {
+  company: "",
+  role: "",
+  status: "Saved",
+  link: "",
+  deadline: "",
+  notes: "",
+};
+
 export default function TrackerPage() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const [form, setForm] = useState({
-    company: "",
-    role: "",
-    status: "Saved",
-    link: "",
-    deadline: "",
-    notes: "",
-  });
+  const [form, setForm] = useState<ApplicationForm>(emptyForm);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   async function fetchApplications() {
     try {
@@ -61,8 +73,14 @@ export default function TrackerPage() {
     try {
       setSaving(true);
 
-      const response = await fetch("/api/applications", {
-        method: "POST",
+      const url = editingId
+        ? `/api/applications/${editingId}`
+        : "/api/applications";
+
+      const method = editingId ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
         },
@@ -72,26 +90,45 @@ export default function TrackerPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.error || "Failed to add application.");
+        alert(data.error || "Failed to save application.");
         return;
       }
 
-      setForm({
-        company: "",
-        role: "",
-        status: "Saved",
-        link: "",
-        deadline: "",
-        notes: "",
-      });
+      setForm(emptyForm);
+      setEditingId(null);
 
       await fetchApplications();
     } catch (error) {
       console.error(error);
-      alert("Something went wrong while adding application.");
+      alert("Something went wrong while saving application.");
     } finally {
       setSaving(false);
     }
+  }
+
+  function handleEdit(application: Application) {
+    setEditingId(application.id);
+
+    setForm({
+      company: application.company,
+      role: application.role,
+      status: application.status,
+      link: application.link || "",
+      deadline: application.deadline
+        ? new Date(application.deadline).toISOString().split("T")[0]
+        : "",
+      notes: application.notes || "",
+    });
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
+  function handleCancelEdit() {
+    setEditingId(null);
+    setForm(emptyForm);
   }
 
   async function handleDelete(id: string) {
@@ -111,6 +148,10 @@ export default function TrackerPage() {
       }
 
       setApplications((prev) => prev.filter((item) => item.id !== id));
+
+      if (editingId === id) {
+        handleCancelEdit();
+      }
     } catch (error) {
       console.error(error);
       alert("Something went wrong while deleting application.");
@@ -131,6 +172,17 @@ export default function TrackerPage() {
           onSubmit={handleSubmit}
           className="mt-8 grid gap-4 rounded-2xl border border-slate-800 bg-slate-900 p-6 md:grid-cols-2"
         >
+          <div className="md:col-span-2">
+            <h2 className="text-xl font-bold">
+              {editingId ? "Edit Application" : "Add New Application"}
+            </h2>
+            <p className="mt-1 text-sm text-slate-400">
+              {editingId
+                ? "Update your saved internship application."
+                : "Add a new internship opportunity to your tracker."}
+            </p>
+          </div>
+
           <div>
             <label className="text-sm text-slate-300">Company *</label>
             <input
@@ -201,13 +253,27 @@ export default function TrackerPage() {
             />
           </div>
 
-          <div className="md:col-span-2">
+          <div className="flex gap-3 md:col-span-2">
             <button
               disabled={saving}
               className="rounded-xl bg-white px-5 py-3 font-semibold text-slate-950 hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {saving ? "Saving..." : "Add Application"}
+              {saving
+                ? "Saving..."
+                : editingId
+                ? "Update Application"
+                : "Add Application"}
             </button>
+
+            {editingId && (
+              <button
+                type="button"
+                onClick={handleCancelEdit}
+                className="rounded-xl border border-slate-700 px-5 py-3 font-semibold text-white hover:bg-slate-800"
+              >
+                Cancel
+              </button>
+            )}
           </div>
         </form>
 
@@ -264,12 +330,21 @@ export default function TrackerPage() {
                       )}
                     </div>
 
-                    <button
-                      onClick={() => handleDelete(item.id)}
-                      className="rounded-xl border border-red-900 px-4 py-2 text-sm text-red-300 hover:bg-red-950"
-                    >
-                      Delete
-                    </button>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => handleEdit(item)}
+                        className="rounded-xl border border-slate-700 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800"
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className="rounded-xl border border-red-900 px-4 py-2 text-sm text-red-300 hover:bg-red-950"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
