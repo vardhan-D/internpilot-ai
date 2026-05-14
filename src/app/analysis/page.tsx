@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import type { ResumeAnalysis } from "@prisma/client";
 import Navbar from "@/components/Navbar";
+import DeleteAnalysisButton from "@/components/DeleteAnalysisButton";
 
 export const dynamic = "force-dynamic";
 
@@ -55,23 +56,27 @@ export default async function AnalysisPage() {
                 key={item.id}
                 className="rounded-2xl border border-slate-800 bg-slate-900 p-6"
               >
-                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                  <div>
-                    <h2 className="text-2xl font-bold">
-                      {item.fileName || "Resume Analysis"}
-                    </h2>
-                    <p className="mt-1 text-sm text-slate-400">
-                      Saved on {new Date(item.createdAt).toLocaleString()}
-                    </p>
-                  </div>
+               <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+  <div>
+    <h2 className="text-2xl font-bold">
+      {item.fileName || "Resume Analysis"}
+    </h2>
+    <p className="mt-1 text-sm text-slate-400">
+      Saved on {new Date(item.createdAt).toLocaleString()}
+    </p>
+  </div>
 
-                  <div className="rounded-xl bg-slate-950 px-5 py-3 text-center">
-                    <p className="text-sm text-slate-400">Score</p>
-                    <p className="text-3xl font-bold text-green-400">
-                      {item.resumeScore}/100
-                    </p>
-                  </div>
-                </div>
+  <div className="flex flex-col items-start gap-3 md:items-end">
+    <div className="rounded-xl bg-slate-950 px-5 py-3 text-center">
+      <p className="text-sm text-slate-400">Score</p>
+      <p className="text-3xl font-bold text-green-400">
+        {item.resumeScore}/100
+      </p>
+    </div>
+
+    <DeleteAnalysisButton id={item.id} />
+  </div>
+</div> 
 
                 <p className="mt-5 text-slate-300">{item.summary}</p>
 
