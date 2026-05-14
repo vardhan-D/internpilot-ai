@@ -1,6 +1,8 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
+import Navbar from "@/components/Navbar";
 
 type Application = {
   id: string;
@@ -159,6 +161,8 @@ export default function TrackerPage() {
   }
 
   return (
+    <>
+      <Navbar />
     <main className="min-h-screen bg-slate-950 px-6 py-10 text-white">
       <section className="mx-auto max-w-6xl">
         <div>
@@ -353,5 +357,6 @@ export default function TrackerPage() {
         </div>
       </section>
     </main>
+    </>
   );
 }

@@ -1,7 +1,8 @@
+
 "use client";
 
 import { useState } from "react";
-
+import Navbar from "@/components/Navbar";
 type AnalysisResult = {
   resumeScore: number;
   summary: string;
@@ -61,6 +62,8 @@ export default function UploadResumePage() {
   };
 
   return (
+    <>
+    <Navbar />
     <main className="min-h-screen bg-slate-950 px-6 py-10 text-white">
       <section className="mx-auto max-w-5xl">
         <h1 className="text-3xl font-bold">Upload Resume</h1>
@@ -170,6 +173,7 @@ export default function UploadResumePage() {
         )}
       </section>
     </main>
+    </>
   );
 }
 

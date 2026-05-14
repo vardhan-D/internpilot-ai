@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
+import Navbar from "@/components/Navbar";
+import ProjectGenerator from "@/components/ProjectGenerator";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +17,7 @@ export default async function ProjectsPage() {
 
   if (!userId) {
     return (
+      
       <main className="min-h-screen bg-slate-950 px-6 py-10 text-white">
         <section className="mx-auto max-w-6xl">
           <h1 className="text-3xl font-bold">Unauthorized</h1>
@@ -23,6 +26,7 @@ export default async function ProjectsPage() {
           </p>
         </section>
       </main>
+      
     );
   }
 
@@ -57,6 +61,7 @@ export default async function ProjectsPage() {
   });
 
   return (
+    <><Navbar />
     <main className="min-h-screen bg-slate-950 px-6 py-10 text-white">
       <section className="mx-auto max-w-6xl">
         <div>
@@ -65,7 +70,7 @@ export default async function ProjectsPage() {
             Resume-based project ideas generated from your saved AI analyses.
           </p>
         </div>
-
+          <ProjectGenerator />
         {projects.length === 0 ? (
           <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-6">
             <p className="text-slate-300">
@@ -114,5 +119,6 @@ export default async function ProjectsPage() {
         )}
       </section>
     </main>
+    </>
   );
 }

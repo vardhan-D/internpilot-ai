@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
+import Navbar from "@/components/Navbar";
 
 export const dynamic = "force-dynamic";
 
@@ -57,11 +58,13 @@ export default async function DashboardPage() {
   const topMissingSkills = Array.from(new Set(missingSkills)).slice(0, 8);
 
   return (
-    <main className="min-h-screen bg-slate-950 px-6 py-10 text-white">
-      <section className="mx-auto max-w-6xl">
-        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Dashboard</h1>
+    <>
+      <Navbar />
+      <main className="min-h-screen bg-slate-950 px-6 py-10 text-white">
+        <section className="mx-auto max-w-6xl">
+          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div>
+              <h1 className="text-3xl font-bold">Dashboard</h1>
             <p className="mt-2 text-slate-400">
               Track your resume progress, project ideas, and internship
               applications.
@@ -173,6 +176,7 @@ export default async function DashboardPage() {
         </div>
       </section>
     </main>
+    </>
   );
 }
 

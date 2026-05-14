@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import type { ResumeAnalysis } from "@prisma/client";
+import Navbar from "@/components/Navbar";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,8 @@ export default async function AnalysisPage() {
   });
 
   return (
+    <>
+      <Navbar />
     <main className="min-h-screen bg-slate-950 px-6 py-10 text-white">
       <section className="mx-auto max-w-6xl">
         <div>
@@ -96,6 +99,7 @@ export default async function AnalysisPage() {
         )}
       </section>
     </main>
+    </>
   );
 }
 
